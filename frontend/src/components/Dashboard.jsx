@@ -43,9 +43,14 @@ export default function Dashboard({ userId }) {
   }
 
   const handleToggleAlgo = async () => {
+    const next = !data.algo_active
+    const msg = next
+      ? 'Algo ON karaycha? Auto trade 9:45 CE gheil (SL -20, TSL +10/+30).'
+      : 'Algo OFF karaycha? Trading thambel, navin trade ghetla janar nahi.'
+    if (!window.confirm(msg)) return
     try {
-      await toggleAlgo(userId, !data.algo_active)
-      setData((prev) => ({ ...prev, algo_active: !prev.algo_active }))
+      await toggleAlgo(userId, next)
+      setData((prev) => ({ ...prev, algo_active: next }))
     } catch (err) { console.error(err) }
   }
 
@@ -69,24 +74,32 @@ export default function Dashboard({ userId }) {
     catch (err) { console.error(err) }
   }
 
-  if (loading) {
+  if (loading || !data) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin text-4xl mb-4">⚡</div>
-          <p className="text-gray-600">Loading dashboard…</p>
+          <p className="text-gray-600">Data Load hotay...</p>
         </div>
       </div>
     )
   }
 
   const { is_demo, algo_active, capital, today_pnl, current_trade, holdings } = data
+  const safePnl = Number.isFinite(today_pnl) ? today_pnl : 0
+  const safeCapital = Number.isFinite(capital) ? capital : 0
 
   return (
     <div className="space-y-6">
       {error && (
         <div className="bg-red-500/10 border border-red-400/30 text-red-700 px-4 py-3 rounded-xl text-sm">{error}</div>
       )}
+
+      {/* User Header */}
+      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <h1 className="text-2xl font-bold text-gray-800">Namaste, {userId}</h1>
+        <p className="text-sm text-gray-500 mt-1">Client ID: {userId}</p>
+      </div>
 
       {/* Mode Banner */}
       <div className="flex gap-3">
@@ -102,24 +115,28 @@ export default function Dashboard({ userId }) {
         </span>
       </div>
 
-      {/* Top Row: Capital / P&L / Holdings */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Top Row: Available / Total / Trades / Profit */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card text="center">
-          <CardTitle>Total Capital</CardTitle>
-          <CardValue value={capital} prefix="₹" />
-          <p className="text-xs text-gray-500 mt-1">{is_demo ? 'Virtual capital' : 'Available balance'}</p>
+          <CardTitle>Available Balance</CardTitle>
+          <CardValue value={safeCapital} prefix="₹" />
         </Card>
 
         <Card text="center">
-          <CardTitle>Today's P&amp;L</CardTitle>
-          <div className={`text-3xl font-bold ${today_pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {today_pnl >= 0 ? '▲' : '▼'} ₹{Math.abs(today_pnl).toLocaleString()}
-          </div>
+          <CardTitle>Total Balance</CardTitle>
+          <CardValue value={data?.sodLimit || safeCapital} prefix="₹" />
         </Card>
 
         <Card text="center">
-          <CardTitle>Holdings</CardTitle>
+          <CardTitle>Trades</CardTitle>
           <div className="text-3xl font-bold text-primary-700">{holdings?.length || 0}</div>
+        </Card>
+
+        <Card text="center">
+          <CardTitle>Profit</CardTitle>
+          <div className={`text-3xl font-bold ${safePnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            ₹{Math.abs(safePnl).toLocaleString()}
+          </div>
         </Card>
       </div>
 
@@ -153,16 +170,9 @@ export default function Dashboard({ userId }) {
           </div>
         </div>
         {algo_active && (
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <button onClick={handleManualEntry}
-              className="py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium">
-              ⚡ Manual Entry
-            </button>
-            <button onClick={handleManualExit}
-              className="py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium">
-              🚪 Manual Exit
-            </button>
-          </div>
+          <p className="text-sm text-gray-500 mt-4 text-center">
+            Auto-trading active: 9:45 CE (100–140), SL -20, TSL +10/+30
+          </p>
         )}
       </Card>
 

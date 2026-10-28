@@ -16,7 +16,7 @@ const API_PREFIX = '/api'
 
 const api = axios.create({
   baseURL: API_BASE ? `${API_BASE}${API_PREFIX}` : API_PREFIX,
-  timeout: 15000,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   },

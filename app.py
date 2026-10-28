@@ -138,6 +138,8 @@ def register_routes(app, mongo, engine):
 
     # ── Health ─────────────────────────────────────────────
     @app.route("/api/health")
+    @app.route("/health")
+    @app.route("/")
     def health():
         return jsonify({
             "status": "ok",
@@ -173,11 +175,12 @@ def register_routes(app, mongo, engine):
             client = DhanAPIClient(client_id, access_token)
             try:
                 fund_data = client.get_fund_limit()
+                logger.info(f"Login fund_limit keys: {list(fund_data.keys())} values: {fund_data}")
             except DhanAPIError as e:
                 logger.warning(f"Login validation failed for {client_id}: {e}")
                 return jsonify({"status": "error", "message": f"Dhan API error: {e}"}), 401
 
-            capital = float(fund_data.get("availabelBalance", 0))
+            capital = float(fund_data.get("availabelBalance", 0) or 0)
             holdings = []
             positions = []
             try:
@@ -241,11 +244,12 @@ def register_routes(app, mongo, engine):
                 try:
                     client = DhanAPIClient(user["client_id"], user["access_token"])
                     fund = client.get_fund_limit()
+                    logger.info(f"Dashboard fund_limit: {fund}")
                     holdings = client.get_holdings()
-                    data["capital"] = float(fund.get("availabelBalance", 0))
+                    data["capital"] = float(fund.get("availabelBalance", 0) or 0)
                     data["holdings"] = holdings
-                except DhanAPIError:
-                    pass
+                except DhanAPIError as e:
+                    logger.warning(f"Dashboard Dhan API error for {user_id}: {e}")
 
         return jsonify(data)
 
