@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoX – NIFTY 9:45 Strategy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fallback styles when React build is not yet available */
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center font-sans">
+
+    <div class="absolute inset-0 opacity-5">
+        <img src="data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM3 82c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm61 0c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z' fill='%23fff'/%3E%3C/svg%3E" alt="pattern" class="w-full h-full">
+    </div>
+
+    <div class="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 md:p-12 max-w-md w-full mx-4 border border-white/20 shadow-2xl">
+
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">
+                Algo<span class="text-yellow-400">X</span>
+            </h1>
+            <p class="text-blue-100">NIFTY 9:45 CE Strategy</p>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Status -->
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10" id="status-box">
+                <div class="flex items-center justify-between">
+                    <span class="text-blue-200">Backend Status</span>
+                    <span id="status-badge" class="px-3 py-1 rounded-full text-sm font-semibold bg-green-400/20 text-green-300">
+                        Checking…
+                    </span>
+                </div>
+                <div class="text-xs text-blue-300 mt-2" id="status-detail">
+                    Connecting to AlgoX server…
+                </div>
+            </div>
+
+            <!-- User count -->
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                <div class="flex items-center justify-between">
+                    <span class="text-blue-200">Active Users</span>
+                    <span id="user-count" class="px-3 py-1 rounded-full text-sm font-semibold bg-blue-400/20 text-blue-300">
+                        --
+                    </span>
+                </div>
+            </div>
+
+            <!-- Launch button -->
+            <a href="/app" class="block w-full bg-gradient-to-r from-yellow-400 to-yellow-300 hover:from-yellow-300 hover:to-yellow-200 text-gray-900 font-bold py-4 rounded-2xl transition transform hover:scale-105 text-center">
+                Launch AlgoX Dashboard
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-xs text-blue-300/60">
+            <p>Powered by DhanHQ API • Multi-User Paper & Real Trading</p>
+            <p class="mt-1">Server running on port 3000</p>
+        </div>
+    </div>
+
+    <script>
+        // Ping the API to show status
+        (async () => {
+            try {
+                const res = await fetch('/api/health', { cache: 'no-store' });
+                const data = await res.json();
+                document.getElementById('status-badge').textContent = data.status;
+                document.getElementById('status-badge').className =
+                    'px-3 py-1 rounded-full text-sm font-semibold bg-green-400/20 text-green-300';
+                document.getElementById('status-detail').textContent =
+                    'Server: ' + (data.timestamp || 'online') + ' | Mode: ' + (data.mode || 'demo-ready');
+            } catch (e) {
+                document.getElementById('status-badge').textContent = 'Offline';
+                document.getElementById('status-badge').className =
+                    'px-3 py-1 rounded-full text-sm font-semibold bg-red-400/20 text-red-300';
+                document.getElementById('status-detail').textContent = 'Server not reachable';
+            }
+            try {
+                const r = await fetch('/api/users/count', { cache: 'no-store' });
+                const d = await r.json();
+                document.getElementById('user-count').textContent = d.count || 0;
+            } catch {}
+        })();
+    </script>
+
+</body>
+</html>

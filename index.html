@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoX Dashboard</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+    <!-- Local Firebase config -->
+    <script src="firebase.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: #16213e;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            max-width: 400px;
+        }
+        h1 {
+            color: #e94560;
+            margin-bottom: 20px;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 6px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-on {
+            background: #2ecc71;
+            color: #fff;
+        }
+        .btn-off {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .demo-switch {
+            margin-top: 24px;
+            text-align: center;
+        }
+        .demo-label {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .demo-indicator {
+            font-size: 20px;
+            font-weight: bold;
+            padding: 8px 20px;
+            border-radius: 8px;
+        }
+        .demo-indicator.active {
+            background: #2ecc71;
+            color: #fff;
+        }
+        .demo-indicator.inactive {
+            background: #95a5a6;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AlgoX Dashboard</h1>
+        
+        <!-- Dashboard Stats -->
+        <div class="dashboard">
+            <div class="stat-card">
+                <div class="stat-label">Capital</div>
+                <div class="stat-value" id="capital">₹10,000</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">P&amp;L</div>
+                <div class="stat-value" id="pl">₹0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Trade</div>
+                <div class="stat-value" id="trade">0</div>
+            </div>
+        </div>
+
+        <!-- ON/OFF Button -->
+        <div class="btn-group">
+            <button class="btn btn-on" id="onOffBtn" onclick="toggleStatus()">ON</button>
+        </div>
+
+        <!-- Demo Switch -->
+        <div class="demo-switch">
+            <div class="demo-label">Demo 10K</div>
+            <div class="demo-indicator active" id="demoIndicator">ACTIVE (₹10,000 Virtual)</div>
+        </div>
+    </div>
+
+    <script>
+        let status = true; // true = ON, false = OFF
+        let isDemo = true; // true = Demo mode active
+
+        const capitalEl = document.getElementById('capital');
+        const plEl = document.getElementById('pl');
+        const tradeEl = document.getElementById('trade');
+        const onOffBtn = document.getElementById('onOffBtn');
+        const demoIndicator = document.getElementById('demoIndicator');
+
+        function toggleStatus() {
+            status = !status;
+            if (status) {
+                onOffBtn.textContent = 'ON';
+                onOffBtn.className = 'btn btn-on';
+            } else {
+                onOffBtn.textContent = 'OFF';
+                onOffBtn.className = 'btn btn-off';
+            }
+        }
+
+        function updateDemo() {
+            if (isDemo) {
+                demoIndicator.textContent = 'ACTIVE (₹10,000 Virtual)';
+                demoIndicator.className = 'demo-indicator active';
+            } else {
+                demoIndicator.textContent = 'INACTIVE';
+                demoIndicator.className = 'demo-indicator inactive';
+            }
+        }
+
+        // Demo toggle
+        demoIndicator.addEventListener('click', () => {
+            isDemo = !isDemo;
+            updateDemo();
+        });
+
+        // Initial state
+        updateDemo();
+    </script>
+</body>
+</html>

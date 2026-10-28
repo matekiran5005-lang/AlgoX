@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: algox-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 2 -b 0.0.0.0:$PORT wsgi:app
+    envVars:
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: MONGO_URI
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PORT
+        value: "10000"
